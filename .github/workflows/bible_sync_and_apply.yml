@@ -1,0 +1,46 @@
+name: Bible — Sync + Apply Approvals
+
+on:
+  schedule:
+    - cron: '0 6 * * *'      # 06:00 UTC = 11:30 IST daily sync
+    - cron: '*/15 * * * *'   # every 15 min: apply approvals
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'sync | apply | both'
+        required: true
+        default: 'both'
+
+jobs:
+  bible:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install deps
+        run: pip install snowflake-connector-python psycopg2-binary cryptography
+
+      - name: Decode Snowflake keypair
+        env:
+          SF_PRIVATE_KEY_B64: ${{ secrets.SF_PRIVATE_KEY_B64 }}
+        run: |
+          mkdir -p ~/.snowflake
+          echo "$SF_PRIVATE_KEY_B64" | base64 -d > ~/.snowflake/akashv2kart_rsa.p8
+          chmod 600 ~/.snowflake/akashv2kart_rsa.p8
+
+      - name: Apply approved change requests (every 15 min)
+        if: github.event.schedule == '*/15 * * * *' || github.event.inputs.mode == 'apply' || github.event.inputs.mode == 'both'
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_V2SRM_DB_URL }}
+        run: python scripts/apply_bible_change_requests.py
+
+      - name: Daily Snowflake -> Supabase sync (11:30 IST)
+        if: github.event.schedule == '0 6 * * *' || github.event.inputs.mode == 'sync' || github.event.inputs.mode == 'both'
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_V2SRM_DB_URL }}
+        run: python scripts/sync_bible_to_supabase.py

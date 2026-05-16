@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.env
+.snowflake/
+*.p8
+.DS_Store
