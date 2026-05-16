@@ -30,8 +30,10 @@ jobs:
           SF_PRIVATE_KEY_B64: ${{ secrets.SF_PRIVATE_KEY_B64 }}
         run: |
           mkdir -p ~/.snowflake
-          echo "$SF_PRIVATE_KEY_B64" | base64 -d > ~/.snowflake/akashv2kart_rsa.p8
+          python -c "import os, base64; open(os.path.expanduser('~/.snowflake/akashv2kart_rsa.p8'),'wb').write(base64.b64decode(os.environ['SF_PRIVATE_KEY_B64']))"
           chmod 600 ~/.snowflake/akashv2kart_rsa.p8
+          head -1 ~/.snowflake/akashv2kart_rsa.p8
+          wc -c ~/.snowflake/akashv2kart_rsa.p8
 
       - name: Apply approved change requests (every 15 min)
         if: github.event.schedule == '*/15 * * * *' || github.event.inputs.mode == 'apply' || github.event.inputs.mode == 'both'
