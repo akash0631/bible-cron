@@ -39,10 +39,12 @@ jobs:
         if: github.event.schedule == '*/15 * * * *' || github.event.inputs.mode == 'apply' || github.event.inputs.mode == 'both'
         env:
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_V2SRM_DB_URL }}
+          SF_CLOCK_SKEW_MIN: '0'
         run: python scripts/apply_bible_change_requests.py
 
       - name: Daily Snowflake -> Supabase sync (11:30 IST)
         if: github.event.schedule == '0 6 * * *' || github.event.inputs.mode == 'sync' || github.event.inputs.mode == 'both'
         env:
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_V2SRM_DB_URL }}
+          SF_CLOCK_SKEW_MIN: '0'
         run: python scripts/sync_bible_to_supabase.py
