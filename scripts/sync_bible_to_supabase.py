@@ -26,6 +26,9 @@ TABLES = [
     ("bible.dim_mvgr_value",          "V2RETAIL.GOLD.DIM_MVGR_VALUE"),
     ("bible.dim_mvgr_synonym",        "V2RETAIL.GOLD.DIM_MVGR_SYNONYM"),
     ("bible.dim_mvgr_required_by_fg", "V2RETAIL.GOLD.DIM_MVGR_REQUIRED_BY_FG"),
+    ("bible.dim_mvgr_usage",          "V2RETAIL.GOLD.MART_MVGR_USAGE"),
+    ("bible.dim_mvgr_orphan",         "V2RETAIL.GOLD.MART_MVGR_ORPHANS"),
+    ("bible.dim_fg_supercat",         "V2RETAIL.GOLD.V_FG_SUPERCAT_FINAL"),
 ]
 
 
