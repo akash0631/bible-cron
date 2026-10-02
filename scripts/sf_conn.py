@@ -15,7 +15,7 @@ import datetime
 import snowflake.connector
 from snowflake.connector.auth import keypair as _kp_mod
 
-_CLOCK_SKEW_MIN = int(os.environ.get("SF_CLOCK_SKEW_MIN", "2"))  # back-date iat to compensate for local clock drift; was 5 in 2026-04, dropped to 2 on 2026-05-02 after Windows clock got more accurate (now ~2 min fast vs server)
+_CLOCK_SKEW_MIN = int(os.environ.get("SF_CLOCK_SKEW_MIN", "0"))  # HOPC622 clock synced to time.windows.com 2-Oct-2026; back-dating now makes the JWT invalid. Set SF_CLOCK_SKEW_MIN only on a box whose clock runs fast.
 
 # Monkey-patch AuthByKeyPair.prepare to back-date iat
 _orig_prepare = _kp_mod.AuthByKeyPair.prepare
